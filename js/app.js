@@ -122,3 +122,15 @@ class SideNav {
 }
 
 new SideNav();
+
+// Application code starts here
+
+function initializeApplication() {
+
+  var map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat:59.9138688,lng:10.752245399999993},
+    zoom: 15,
+    fullscreenControl: true
+  });
+
+}

@@ -25,7 +25,7 @@ limitations under the License.
   <div class="header">
     <button class="js-menu-show header__menu-toggle material-icons">menu</button>
   </div>
-
+  <div id="map"></div>
   <aside class="js-side-nav side-nav">
     <nav class="js-side-nav-container side-nav__container">
       <button class="js-menu-hide side-nav__hide material-icons">close</button>
@@ -40,9 +40,9 @@ limitations under the License.
       </ul>
     </nav>
   </aside>
-  <div>
-    <h1>Main Content Here</h1>
-  </div>
+
   <script src='./js/app.js'></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBt5Ma48m87vNYB5Wh63PwjHgMtJD7B_w&libraries=places&callback=initializeApplication"
+  async defer></script>
 </body>
 </html>

@@ -151,3 +151,10 @@ html, body {
 .side-nav__content li:hover {
   background: #CCC;
 }
+
+/* Need to give the map a size, to make it show */
+#map {
+
+  height: 500px;
+  /*z-index: -1;*/
+}
