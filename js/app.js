@@ -127,10 +127,22 @@ new SideNav();
 
 function initializeApplication() {
 
+  var oslo = {lat:59.9138688,lng:10.752245399999993};
+
+  // Create a map and center it in oslo
   var map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat:59.9138688,lng:10.752245399999993},
+    center: oslo,
     zoom: 15,
     fullscreenControl: true
+  });
+
+  // Create the search box and link it to the UI element.
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function() {
+    searchBox.setBounds(map.getBounds());
   });
 
 }
