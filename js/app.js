@@ -129,6 +129,60 @@ function initializeApplication() {
 
   var oslo = {lat:59.9138688,lng:10.752245399999993};
 
+  // Uses the foursquare api to find popular spots around a provided center
+  // @parameter: center, {lat: Number, lng: Number}
+  // @parameter: callback function that receives an array of popular spots
+  var getPopularSpots = function (center, callback) {
+    var venueExplore = 'https://api.foursquare.com/v2/venues/explore?';
+    var venueSearch = 'https://api.foursquare.com/v2/venues/search?';
+    var credentials = 'client_id=Y0DEZ005CDT1Y2FBGGXV4KWYOEPLWAKFXTXC0UXLNAFHTFAY&client_secret=GEA32UVN3CUN0IHNCTSFU1SOABB0WT4HH2U2WYRR3ZLX4JX2';
+    var version = '&v=20130815';
+    var coordinates = '&ll=' + center.lat + ',' + center.lng;
+    var query = '&query=Popular with visitors';
+
+     var request = new XMLHttpRequest();
+     request.open(
+       'GET',
+       venueExplore + credentials + version + coordinates + query,
+       true
+     );
+
+     request.onreadystatechange = function() {
+       if ( request.readyState != 4  || request.status != 200 ) {
+         return;
+       }
+       var answer = JSON.parse(request.responseText);
+       var items = answer.response.groups[0].items;
+       callback(items);
+     };
+
+     request.send('');
+  }
+
+  getPopularSpots(oslo, function (items) {
+    console.log(items);
+  });
+
+  // Find the distance between 2 latitude and longitude pairs in kilometers
+  // code copied from here: http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula?page=1&tab=votes#tab-top
+  var calculateDistance = function (lat1,lon1,lat2,lon2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = degreesToRadians(lat2-lat1);
+    var dLon = degreesToRadians(lon2-lon1);
+    var a =
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+      ;
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c; // Distance in km
+    return d;
+  }
+
+  var degreesToRadians = function (deg) {
+    return deg * (Math.PI/180)
+  }
+
   // Create a map and center it in oslo
   var map = new google.maps.Map(document.getElementById('map'), {
     center: oslo,
@@ -144,5 +198,10 @@ function initializeApplication() {
   map.addListener('bounds_changed', function() {
     searchBox.setBounds(map.getBounds());
   });
+
+  // map.addListener('center_changed', function () {
+  //   getPopularSpots(JSON.stringify(map.getCenter()));
+  // })
+
 
 }
