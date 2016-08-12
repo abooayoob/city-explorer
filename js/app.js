@@ -127,23 +127,35 @@ new SideNav();
 
 function initializeApplication() {
 
+  // starting point
   var oslo = {lat:59.9138688,lng:10.752245399999993};
+
+  var foursquare = {
+    venues: 'https://api.foursquare.com/v2/venues/',
+    explore: 'explore?',
+    search: 'search?',
+    credentials: 'client_id=Y0DEZ005CDT1Y2FBGGXV4KWYOEPLWAKFXTXC0UXLNAFHTFAY&client_secret=GEA32UVN3CUN0IHNCTSFU1SOABB0WT4HH2U2WYRR3ZLX4JX2',
+    version: '&v=20130815'
+
+  };
+
 
   // Uses the foursquare api to find popular spots around a provided center
   // @parameter: center, {lat: Number, lng: Number}
   // @parameter: callback function that receives an array of popular spots
   var getPopularSpots = function (center, callback) {
-    var venueExplore = 'https://api.foursquare.com/v2/venues/explore?';
-    var venueSearch = 'https://api.foursquare.com/v2/venues/search?';
-    var credentials = 'client_id=Y0DEZ005CDT1Y2FBGGXV4KWYOEPLWAKFXTXC0UXLNAFHTFAY&client_secret=GEA32UVN3CUN0IHNCTSFU1SOABB0WT4HH2U2WYRR3ZLX4JX2';
-    var version = '&v=20130815';
+
     var coordinates = '&ll=' + center.lat + ',' + center.lng;
     var query = '&query=Popular with visitors';
 
      var request = new XMLHttpRequest();
      request.open(
        'GET',
-       venueExplore + credentials + version + coordinates + query,
+       foursquare.venues +
+       foursquare.explore +
+       foursquare.credentials +
+       foursquare.version +
+       coordinates + query,
        true
      );
 
@@ -162,6 +174,37 @@ function initializeApplication() {
   getPopularSpots(oslo, function (items) {
     console.log(items);
   });
+
+  var getVenueDetails = function (venueId, callback) {
+
+    var request = new XMLHttpRequest();
+    request.open(
+      'GET',
+      foursquare.venues +
+      venueId +
+      '?' +
+      foursquare.credentials +
+      foursquare.version,
+      true
+    );
+
+    request.onreadystatechange = function() {
+      if ( request.readyState != 4  || request.status != 200 ) {
+        return;
+      }
+      var venue = JSON.parse(request.responseText);
+      callback(venue);
+    };
+
+    request.send('');
+
+  }
+
+  getPopularSpots(oslo, function (items) {
+    getVenueDetails(items[0].venue.id, function (venue) {
+      console.log(venue);
+    })
+  })
 
   // Find the distance between 2 latitude and longitude pairs in kilometers
   // code copied from here: http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula?page=1&tab=votes#tab-top
