@@ -130,6 +130,8 @@ function initializeApplication() {
   // starting point
   var oslo = {lat:59.9138688,lng:10.752245399999993};
 
+  var bounds = new google.maps.LatLngBounds();
+
   var foursquare = {
     venues: 'https://api.foursquare.com/v2/venues/',
     explore: 'explore?',
@@ -171,10 +173,10 @@ function initializeApplication() {
      request.send('');
   }
 
-  getPopularSpots(oslo, function (items) {
-    console.log(items);
-  });
 
+  // Uses the foursquare api to get details of a provided venue
+  // @parameter: venueId,
+  // @parameter: callback function that receives a venue object to process
   var getVenueDetails = function (venueId, callback) {
 
     var request = new XMLHttpRequest();
@@ -200,11 +202,43 @@ function initializeApplication() {
 
   }
 
-  getPopularSpots(oslo, function (items) {
-    getVenueDetails(items[0].venue.id, function (venue) {
-      console.log(venue);
-    })
-  })
+  var heyNewPlace = function (place) {
+    getPopularSpots(place, function (items) {
+      items.forEach(function (item) {
+        getVenueDetails(item.venue.id, function (responseObject) {
+          var venue = responseObject.response.venue;
+
+          var position = {
+            lat: venue.location.lat,
+            lng: venue.location.lng,
+          };
+
+          var marker = new google.maps.Marker({
+            map: map,
+            title: venue.name,
+            position: position
+          });
+
+          marker.addListener( 'click', function() {
+            console.log(marker.title);
+          } );
+
+          venue.marker = marker;
+          console.log(venue);
+          cityExplorer.addVenue(venue);
+
+
+          bounds.extend(new google.maps.LatLng(position));
+          map.fitBounds(bounds);
+
+        });
+
+      });
+    });
+  };
+
+  heyNewPlace(oslo);
+
 
   // Find the distance between 2 latitude and longitude pairs in kilometers
   // code copied from here: http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula?page=1&tab=votes#tab-top
@@ -242,9 +276,20 @@ function initializeApplication() {
     searchBox.setBounds(map.getBounds());
   });
 
-  // map.addListener('center_changed', function () {
-  //   getPopularSpots(JSON.stringify(map.getCenter()));
-  // })
 
 
+
+  var ViewModel = function () {
+    this.venueList = ko.observableArray([]);
+
+    this.addVenue = this.addVenue.bind(this);
+  }
+
+  ViewModel.prototype.addVenue = function (marker) {
+    this.venueList.push(marker);
+  }
+
+  var cityExplorer =  new ViewModel();
+
+  ko.applyBindings(cityExplorer);
 }
