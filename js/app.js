@@ -129,8 +129,9 @@ function initializeApplication() {
 
   // starting point
   var oslo = {lat:59.9138688,lng:10.752245399999993};
+  var firstRequest = true;
 
-  var bounds = new google.maps.LatLngBounds();
+  var bounds;
 
   var foursquare = {
     venues: 'https://api.foursquare.com/v2/venues/',
@@ -147,7 +148,12 @@ function initializeApplication() {
   // @parameter: callback function that receives an array of popular spots
   var getPopularSpots = function (center, callback) {
 
+    // if (firstRequest) {
+    //   var coordinates = '&ll=' + center.lat + ',' + center.lng;
+    //   firstRequest = false;
+    // }
     var coordinates = '&ll=' + center.lat + ',' + center.lng;
+    console.log(center);
     var query = '&query=Popular with visitors';
 
      var request = new XMLHttpRequest();
@@ -203,6 +209,7 @@ function initializeApplication() {
   }
 
   var heyNewPlace = function (place) {
+    bounds = new google.maps.LatLngBounds();
     getPopularSpots(place, function (items) {
       items.forEach(function (item) {
         getVenueDetails(item.venue.id, function (responseObject) {
@@ -237,29 +244,6 @@ function initializeApplication() {
     });
   };
 
-  heyNewPlace(oslo);
-
-
-  // Find the distance between 2 latitude and longitude pairs in kilometers
-  // code copied from here: http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula?page=1&tab=votes#tab-top
-  var calculateDistance = function (lat1,lon1,lat2,lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = degreesToRadians(lat2-lat1);
-    var dLon = degreesToRadians(lon2-lon1);
-    var a =
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) *
-      Math.sin(dLon/2) * Math.sin(dLon/2)
-      ;
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    var d = R * c; // Distance in km
-    return d;
-  }
-
-  var degreesToRadians = function (deg) {
-    return deg * (Math.PI/180)
-  }
-
   // Create a map and center it in oslo
   var map = new google.maps.Map(document.getElementById('map'), {
     center: oslo,
@@ -277,19 +261,92 @@ function initializeApplication() {
   });
 
 
+  searchBox.addListener('places_changed', function() {
+    var places = searchBox.getPlaces();
+
+    if (places.length === 0) {
+      return;
+    }
+
+    // calculate distance
+    var distance =
+    google.maps.geometry.spherical.
+    computeDistanceBetween(places[0].geometry.location, map.getCenter());
+
+    // Convert to a LatLng literal object
+    var newCenter = JSON.stringify(places[0].geometry.location);
+    var newCity = JSON.parse(newCenter);
+
+    // If user chose a place far away
+    // they probably want to explore another city
+    if (distance > 6000) {
+      cityExplorer.removeAllVenues();
+      heyNewPlace(newCity);
+      return;
+    }
+
+    // // Clear out the old markers.
+    // markers.forEach(function(marker) {
+    //   marker.setMap(null);
+    // });
+    // markers = [];
+    //
+    // // For each place, get the icon, name and location.
+    // var bounds = new google.maps.LatLngBounds();
+    // places.forEach(function(place) {
+    //   var icon = {
+    //     url: place.icon,
+    //     size: new google.maps.Size(71, 71),
+    //     origin: new google.maps.Point(0, 0),
+    //     anchor: new google.maps.Point(17, 34),
+    //     scaledSize: new google.maps.Size(25, 25)
+    //   };
+    //
+    //   // Create a marker for each place.
+    //   var marker = new google.maps.Marker({
+    //     map: map,
+    //     icon: icon,
+    //     title: place.name,
+    //     position: place.geometry.location
+    //   });
+    //
+    //   marker.addListener( 'click', function() {
+    //     console.log(marker.title);
+    //   } );
+    //
+    //   markers.push(marker);
+    //
+    //   if (place.geometry.viewport) {
+    //     // Only geocodes have viewport.
+    //     bounds.union(place.geometry.viewport);
+    //   } else {
+    //     bounds.extend(place.geometry.location);
+    //   }
+    // });
+    // map.fitBounds(bounds);
+    // console.log(JSON.stringify(map.getCenter()));
+  });
 
 
   var ViewModel = function () {
-    this.venueList = ko.observableArray([]);
+    this.venueList = ko.observableArray();
 
     this.addVenue = this.addVenue.bind(this);
+    this.removeAllVenues = this.removeAllVenues.bind(this);
   }
 
   ViewModel.prototype.addVenue = function (marker) {
     this.venueList.push(marker);
   }
+  ViewModel.prototype.removeAllVenues = function () {
+    this.venueList().forEach(function (venue) {
+      venue.marker.setMap(null);
+    });
+    this.venueList.removeAll();
+  }
 
   var cityExplorer =  new ViewModel();
 
   ko.applyBindings(cityExplorer);
+  heyNewPlace(oslo);
 }
