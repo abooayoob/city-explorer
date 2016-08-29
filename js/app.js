@@ -130,6 +130,7 @@ function initializeApplication() {
   // starting point
   var oslo = {lat:59.9138688,lng:10.752245399999993};
   var firstRequest = true;
+  var infoWindow = new google.maps.InfoWindow();
 
   var bounds;
 
@@ -153,7 +154,6 @@ function initializeApplication() {
     //   firstRequest = false;
     // }
     var coordinates = '&ll=' + center.lat + ',' + center.lng;
-    console.log(center);
     var query = '&query=Popular with visitors';
 
      var request = new XMLHttpRequest();
@@ -208,6 +208,16 @@ function initializeApplication() {
 
   }
 
+  var constructPhotosArray = function (venue) {
+    venue.photoUrls = venue.photos.groups[0].items.map(function (item) {
+      return item.prefix + 'original' + item.suffix;
+    });
+  };
+
+  var constructBestPhoto = function (venue) {
+    venue.bestPhotoUrl = venue.bestPhoto.prefix + 'original' + venue.bestPhoto.suffix;
+  };
+
   var heyNewPlace = function (place) {
     bounds = new google.maps.LatLngBounds();
     getPopularSpots(place, function (items) {
@@ -227,10 +237,11 @@ function initializeApplication() {
           });
 
           marker.addListener( 'click', function() {
-            console.log(marker.title);
+            showInfo(venue, infoWindow);
           } );
 
           venue.marker = marker;
+          constructPhotosArray(venue);
           console.log(venue);
           cityExplorer.addVenue(venue);
 
@@ -239,10 +250,22 @@ function initializeApplication() {
           map.fitBounds(bounds);
 
         });
-
       });
     });
   };
+
+  var showInfo = function (venue, infowindow) {
+    // Check to make sure the infowindow is not already opened on this marker.
+    if (infowindow.marker != venue.marker) {
+      infowindow.marker = venue.marker;
+      infowindow.setContent('<div>' + venuevenuename + '</div>');
+      infowindow.open(map, venue.marker);
+      // Make sure the marker property is cleared if the infowindow is closed.
+      infowindow.addListener('closeclick',function(){
+        infowindow.setMarker(null);
+      });
+    }
+  }
 
   // Create a map and center it in oslo
   var map = new google.maps.Map(document.getElementById('map'), {
@@ -260,7 +283,7 @@ function initializeApplication() {
     searchBox.setBounds(map.getBounds());
   });
 
-
+  // When the user selects a search option
   searchBox.addListener('places_changed', function() {
     var places = searchBox.getPlaces();
 
@@ -285,46 +308,6 @@ function initializeApplication() {
       return;
     }
 
-    // // Clear out the old markers.
-    // markers.forEach(function(marker) {
-    //   marker.setMap(null);
-    // });
-    // markers = [];
-    //
-    // // For each place, get the icon, name and location.
-    // var bounds = new google.maps.LatLngBounds();
-    // places.forEach(function(place) {
-    //   var icon = {
-    //     url: place.icon,
-    //     size: new google.maps.Size(71, 71),
-    //     origin: new google.maps.Point(0, 0),
-    //     anchor: new google.maps.Point(17, 34),
-    //     scaledSize: new google.maps.Size(25, 25)
-    //   };
-    //
-    //   // Create a marker for each place.
-    //   var marker = new google.maps.Marker({
-    //     map: map,
-    //     icon: icon,
-    //     title: place.name,
-    //     position: place.geometry.location
-    //   });
-    //
-    //   marker.addListener( 'click', function() {
-    //     console.log(marker.title);
-    //   } );
-    //
-    //   markers.push(marker);
-    //
-    //   if (place.geometry.viewport) {
-    //     // Only geocodes have viewport.
-    //     bounds.union(place.geometry.viewport);
-    //   } else {
-    //     bounds.extend(place.geometry.location);
-    //   }
-    // });
-    // map.fitBounds(bounds);
-    // console.log(JSON.stringify(map.getCenter()));
   });
 
 
@@ -335,8 +318,8 @@ function initializeApplication() {
     this.removeAllVenues = this.removeAllVenues.bind(this);
   }
 
-  ViewModel.prototype.addVenue = function (marker) {
-    this.venueList.push(marker);
+  ViewModel.prototype.addVenue = function (venue) {
+    this.venueList.push(venue);
   }
   ViewModel.prototype.removeAllVenues = function () {
     this.venueList().forEach(function (venue) {
