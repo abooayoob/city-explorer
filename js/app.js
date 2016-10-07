@@ -261,8 +261,14 @@ function initializeApplication() {
     if (infowindow.marker != venue.marker) {
 
       var content = '<div id="content" class="content">'
-         + '<h1 class="content__heading" data-bind="text: venueList()[' + venue.index + '].name"></h1>'
-       + '</div>';
+          + '<h1 class="content__heading" data-bind="text: venueList()[' + venue.index + '].name"></h1>'
+          + '<div class="image-slider" data-bind="foreach: venueList()[' + venue.index + '].photoUrls">'
+          +    '<div class="image-slider__image-container">'
+          +      '<img data-bind="attr: {src: $data}" alt="">'
+          +    '</div>'
+          +  '</div>'
+
+          + '</div>';
 
 
       infowindow.marker = venue.marker;
