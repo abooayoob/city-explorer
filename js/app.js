@@ -220,6 +220,7 @@ function initializeApplication() {
 
   var heyNewPlace = function (place) {
     bounds = new google.maps.LatLngBounds();
+    var index = 0;
     getPopularSpots(place, function (items) {
       items.forEach(function (item) {
         getVenueDetails(item.venue.id, function (responseObject) {
@@ -241,6 +242,7 @@ function initializeApplication() {
           } );
 
           venue.marker = marker;
+          venue.index = index++;
           constructPhotosArray(venue);
           console.log(venue);
           cityExplorer.addVenue(venue);
@@ -257,13 +259,19 @@ function initializeApplication() {
   var showInfo = function (venue, infowindow) {
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker != venue.marker) {
+
+      var content = '<div id="content" class="content">'
+         + '<h1 class="content__heading" data-bind="text: venueList()[' + venue.index + '].name"></h1>'
+       + '</div>';
+
+
       infowindow.marker = venue.marker;
-      infowindow.setContent('<div>' + venuevenuename + '</div>');
+      infowindow.setContent(content);
       infowindow.open(map, venue.marker);
-      // Make sure the marker property is cleared if the infowindow is closed.
-      infowindow.addListener('closeclick',function(){
-        infowindow.setMarker(null);
-      });
+
+      // Need to apply bindings because the content gets removed and added
+      // to the DOM each time
+      ko.applyBindings(cityExplorer, document.getElementById('content'));
     }
   }
 
