@@ -154,3 +154,26 @@ html, body {
   margin: 20px;
   -ms-flex-positive: 5;
       flex-grow: 5; }
+
+/* styling the info boxes */
+.content {
+  max-width: 500px;
+  min-width: 400px;
+  background-color: pink;
+  margin: auto; }
+
+.image-slider {
+  background-color: pink;
+  max-width: 90%;
+  margin: auto;
+  white-space: nowrap;
+  overflow-y: hidden; }
+
+.image-slider__image-container {
+  display: inline-block; }
+
+.image-container {
+  display: inline-block; }
+
+.image-slider__image {
+  max-width: 100px; }

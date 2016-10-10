@@ -252,7 +252,7 @@ function initializeApplication() {
     // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker != venue.marker) {
 
-      var content = '<div id="content" class="content">' + '<h1 class="content__heading" data-bind="text: venueList()[' + venue.index + '].name"></h1>' + '</div>';
+      var content = '<div id="content" class="content">' + '<h1 class="content__heading" data-bind="text: venueList()[' + venue.index + '].name"></h1>' + '<h2> hello</h2>' + '<div class="image-slider" data-bind="foreach: venueList()[' + venue.index + '].photoUrls">' + '<div class="image-slider__image-container">' + '<img style="max-width:300px;" class="image-slider__image" data-bind="attr: {src: $data}" alt="">' + '</div>' + '</div>' + '</div>';
 
       infowindow.marker = venue.marker;
       infowindow.setContent(content);
