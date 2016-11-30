@@ -1,4 +1,4 @@
 # City Explorer
 
-Remember to click the markers!
+Search for a city, remember to click the markers!
 [DEMO](https://abooayoob.github.io/city-explorer/)
