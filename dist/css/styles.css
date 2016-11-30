@@ -159,11 +159,11 @@ html, body {
 .content {
   max-width: 500px;
   min-width: 400px;
-  background-color: pink;
+  background-color: white;
   margin: auto; }
 
 .image-slider {
-  background-color: pink;
+  background-color: white;
   max-width: 90%;
   margin: auto;
   white-space: nowrap;

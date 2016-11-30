@@ -17,21 +17,21 @@ limitations under the License.
   <meta name="author" content="Paul Lewis and Surma" />
   <meta name="viewport" content="width=device-width,minimum-scale=1">
   <meta name="theme-color" content="#EA2663">
-  <title>Side Nav</title>
+  <title>City Explorer</title>
   <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
   <link href="./css/styles.css" rel="stylesheet">
 </head>
 <body>
   <div class="header">
     <button class="js-menu-show header__menu-toggle material-icons">menu</button>
-    <input type="text" id="pac-input" class="controls">
+    <input type="text" id="pac-input" class="controls" placeholder="Type the name of a city">
   </div>
   <div id="map"></div>
   <aside class="js-side-nav side-nav">
     <nav class="js-side-nav-container side-nav__container">
       <button class="js-menu-hide side-nav__hide material-icons">close</button>
       <header class="side-nav__header">
-        Side Nav
+        City Explorer
       </header>
       <ul data-bind="foreach: venueList" class="side-nav__content">
         <li data-bind="text: $data.name"></li>

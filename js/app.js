@@ -1,3 +1,6 @@
+// The SideNav class  is written by Paul Lewis and Surma (Sorry don't know the last  name)
+// https://www.youtube.com/watch?v=e5CXg1sjTqQ
+
 /**
  *
  * Copyright 2016 Google Inc. All rights reserved.
@@ -14,6 +17,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
 
 'use strict';
 
@@ -264,7 +269,7 @@ function initializeApplication() {
           + '<h1 class="content__heading" data-bind="text: venueList()[' + venue.index + '].name"></h1>'
           + '<div class="image-slider" data-bind="foreach: venueList()[' + venue.index + '].photoUrls">'
           +    '<div class="image-slider__image-container">'
-          +      '<img style="max-width:300px;" class="image-slider__image" data-bind="attr: {src: $data}" alt="">'
+          +      '<img style="max-width:300px;max-height:200px" class="image-slider__image" data-bind="attr: {src: $data}" alt="">'
           +    '</div>'
           +  '</div>'
 
