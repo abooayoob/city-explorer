@@ -126,7 +126,7 @@ class SideNav {
   }
 }
 
-new SideNav();
+var nav = new SideNav();
 
 // Application code starts here
 
@@ -335,6 +335,7 @@ function initializeApplication() {
 
     this.addVenue = this.addVenue.bind(this);
     this.removeAllVenues = this.removeAllVenues.bind(this);
+    this.callShowInfo = this.callShowInfo.bind(this);
   }
 
   ViewModel.prototype.addVenue = function (venue) {
@@ -345,6 +346,10 @@ function initializeApplication() {
       venue.marker.setMap(null);
     });
     this.venueList.removeAll();
+  }
+  ViewModel.prototype.callShowInfo = function (venue) {
+    showInfo(venue, infoWindow);
+    nav.hideSideNav();
   }
 
   var cityExplorer =  new ViewModel();

@@ -34,7 +34,7 @@ limitations under the License.
         City Explorer
       </header>
       <ul data-bind="foreach: venueList" class="side-nav__content">
-        <li data-bind="text: $data.name"></li>
+        <li data-bind="text: $data.name, click: $parent.callShowInfo"></li>
       </ul>
     </nav>
   </aside>
