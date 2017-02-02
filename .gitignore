@@ -1,1 +1,5 @@
 js/keys.js
+
+dist/
+
+node_modules/
